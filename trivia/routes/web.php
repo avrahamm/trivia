@@ -18,3 +18,11 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/trivia/login', 'PlayerController@login')->name('player.login');
+Route::post('/trivia/login', 'PlayerController@saveUser')->name('player.saveUser');
+
+Route::get('/trivia/start', 'QuestionController@create')->name('question.create')->middleware('auth');
+
+Route::get('/trivia/play', 'GameController@displayForm')->name('game.form')->middleware('auth');
+Route::post('/trivia/play', 'GameController@checkAnswer')->name('game.answer')->middleware('auth');
