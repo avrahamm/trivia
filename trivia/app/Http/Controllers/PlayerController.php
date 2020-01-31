@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\QuestionHelper;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,8 +32,15 @@ class PlayerController extends Controller
             'name' => $username,
         ]);
         Auth::login($user);
+//        if( $question = QuestionHelper::getValidQuestion())
+        // if valid question exists,
+        //      get it,
+        //      return redirect()->route('game.form');
+        //else
+        //  first redirect to create new question,
         return redirect()->route('question.create');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -40,7 +48,8 @@ class PlayerController extends Controller
      */
     public function index()
     {
-        //
+        // @link:https://stackoverflow.com/questions/15632144/laravel-get-currently-logged-in-users
+        $loggedInPlayers = [];
     }
 
     /**
