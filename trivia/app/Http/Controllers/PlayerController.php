@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\QuestionHelper;
-use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\Routing\Annotation\Route;
+use Illuminate\Http\RedirectResponse;
+
+use App\User;
+use App\Helpers\QuestionHelper;
 
 class PlayerController extends Controller
 {
@@ -16,7 +18,7 @@ class PlayerController extends Controller
      */
     public function loginForm()
     {
-        return view('trivia.login');
+        return view('trivia.loginForm');
     }
 
     /**
@@ -28,7 +30,7 @@ class PlayerController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function saveUser(Request $request)
+    public function saveUser(Request $request) : RedirectResponse
     {
         $request->validate([
             'username' => 'required|alpha_num|min:2|max:10|',
@@ -48,13 +50,15 @@ class PlayerController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Returns a list of logged in users.
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function showLoggedInUsers()
     {
         // @link:https://stackoverflow.com/questions/15632144/laravel-get-currently-logged-in-users
-        $loggedInPlayers = [];
+        $lifetime = env('SESSION_LIFETIME', 120);
+        $loggedInUsers = User::where('updated_at', '>',
+            Carbon::now()->subMinutes($lifetime))->get();
+        return view('trivia.loggedInUsers', ['users' => $loggedInUsers]);
     }
 }

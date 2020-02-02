@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\QuestionHelper;
 use Illuminate\Http\Request;
+use App\Helpers\QuestionHelper;
 
 class QuestionController extends Controller
 {

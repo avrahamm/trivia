@@ -33,3 +33,5 @@ Route::get('/trivia/start', 'QuestionController@create')->name('question.create'
 
 Route::get('/trivia/play', 'GameController@displayForm')->name('game.form')->middleware('auth');
 Route::post('/trivia/play', 'GameController@checkAnswer')->name('game.checkAnswer')->middleware('auth');
+
+Route::get('/trivia/players', 'PlayerController@showLoggedInUsers')->name('player.loggedInUsers');

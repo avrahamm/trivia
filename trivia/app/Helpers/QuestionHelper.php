@@ -3,11 +3,18 @@
 
 namespace App\Helpers;
 
-
 use App\Question;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Class QuestionHelper
+ * @package App\Helpers
+ *
+ * To perform question operations.
+ * A question is created, stored in database but put to cache
+ * to minimize DB calls for efficiency.
+ */
 class QuestionHelper
 {
     //@link:https://stackoverflow.com/questions/28290332/best-practices-for-custom-helpers-in-laravel-5
@@ -18,6 +25,7 @@ class QuestionHelper
     {
        $question = static::createNewQuestion();
        static::cacheValidQuestion($question);
+       Question::where('id','<',$question->id)->delete();
        return $question;
     }
 
