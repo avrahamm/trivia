@@ -4,6 +4,8 @@
 - You can read the definition at the bottom.
 - Briefly, multiple users connect to solve trivia questions.
 - When solved, new question is generated and suggested to players.
+- Question are generated from random api, stored to DB and to cache for faster reads.
+- Users are created with login user name, and are deleted when loggged out.
 
 ## Steps to set up:
 - git clone https://github.com/avrahamm/trivia.git
