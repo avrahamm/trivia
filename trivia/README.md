@@ -1,78 +1,86 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+## About Trivia
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+- Trivia game is developped in Laravel framework.
+- You can read the definition at the bottom.
+- Briefly, multiple users connect to solve trivia questions.
+- When solved, new question is generated and suggested to players.
 
-## About Laravel
+## Steps to set up:
+- git clone https://github.com/avrahamm/trivia.git
+- create DB, for example call it trivia.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- I ran it on XAMP on windows, 
+- you should either prepare virtual host for convenience,lets call it trivia,
+- or run from as http://localhost/JobExams/golgi/trivia/public/
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# set .env file with DB credentials, for example
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- DB_CONNECTION=mysql
+- DB_HOST=127.0.0.1
+- DB_PORT=3306
+- DB_DATABASE=trivia
+- DB_USERNAME=avraham
+- DB_PASSWORD=123456
 
-## Learning Laravel
+# run migrations to build Db tables: 
+- php artisan migrate
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# to assure config and cache are ok, run
+- php artisan config:clear
+- php artisan config:cache
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-You should be good to go, open http://trivia/trivia/login
 
-## Laravel Sponsors
+## ======================================================================
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Trivia Definition 
+Write a simple trivia competition game
+--------------------------------------
+Environment:
+1 - PHP
+4 - http app server (Apache)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+The game goes like this:
+User is connected via login from.
+In response the user get a question to answer.
+The question is similar to all  connected users and newly users.
+Each user can send his answer through the game form.
+If the answer is correct than the server pick another question to display to all users.
 
-## Contributing
+client side (HTML/javascript)
+-----------------------------
+forms:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1 - login form with user name field
+2 - game form with fields: 
+     the question - title
+     user answer - input field
+     send button - button
+     message field (“answer is wrong”) - title clear upon user typing
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+server side
+-----------
+PHP api
+GET /trivia/login - display the login form with user name field
+POST /trivia/login - save the user name on the server side
+GET /trivia/start - generate a question and save the question and answer on the server side 
+GET /trivia/play - display the game form
+POST /trivia/play - check the user answer and return write/wrong
+GET /trivia/players - return list of login players
 
-## Security Vulnerabilities
+To get a random question and answer call this endpoint: http://jservice.io/api/random
+The answer is match when user answer and answer recivied with the question contains similar “terms” in any order.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+To analyse the answer:
+1 - Remove any character that is not letter.
+1 - Ignore words “for”, “the”, “a”, “an”, “and”,”or”,”nor”,”but”,”so”,”is”,”are”,”of”
+2 - Remove the following suffixes from the words: “s”, “es”, “ed”, “ing”
+3 - Ignore caps
 
-## License
+for example “The building is tall and wide, and made of 1000 stones” is similar to “Stone made - Build wide/tall.”  
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+
+
