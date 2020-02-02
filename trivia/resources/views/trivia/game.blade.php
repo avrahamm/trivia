@@ -61,3 +61,14 @@
     </div>
 </div>
 @endsection
+
+@section('js')
+    <script>
+        jQuery(document).ready(function() {
+            $('#answer').on('click', function() {
+                // alert("Hi from game.blade.php");
+                $('#gameMessage').val('');
+            })
+        });
+    </script>
+@endsection

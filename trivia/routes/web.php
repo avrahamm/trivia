@@ -14,19 +14,20 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/home', 'HomeController@index')->name('home');
+
+//=================== Trivia Routes ==================
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-
-
-Route::get('/trivia/login', 'PlayerController@login')->name('player.login');
-//    ->middleware('guest');
+Route::get('/trivia/login', 'PlayerController@loginForm')->name('player.loginForm')
+    ->middleware('guest');
 Route::get('/', function(){
-    return redirect()->route('player.login');
+    return redirect()->route('player.loginForm');
 })->middleware('guest');
-Route::post('/trivia/login', 'PlayerController@saveUser')->name('player.saveUser');
-//    ->middleware('guest');
+
+Route::post('/trivia/login', 'PlayerController@saveUser')->name('player.saveUser')
+    ->middleware('guest');
 
 Route::get('/trivia/start', 'QuestionController@create')->name('question.create')->middleware('auth');
 

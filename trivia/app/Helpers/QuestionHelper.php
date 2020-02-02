@@ -6,30 +6,110 @@ namespace App\Helpers;
 
 use App\Question;
 use GuzzleHttp\Client;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class QuestionHelper
 {
+    //@link:https://stackoverflow.com/questions/28290332/best-practices-for-custom-helpers-in-laravel-5
+    public static $illegalWords = ['',"for", "the", "a", "an", "and","or","nor","but","so","is","are","of"];
+    public static $illegalSuffixes = ["es","s","ed","ing"];
 
-    public const VALID_QUESTION = true;
-    public const NOT_VALID_QUESTION = false;
+    public static function generateNewValidQuestion()
+    {
+       $question = static::createNewQuestion();
+       static::cacheValidQuestion($question);
+       return $question;
+    }
 
+    public static function createNewQuestion()
+    {
+        $question = static::getRandomQuestionSentence();
+        $answerCollection = static::getQuestionsAnswer($question);
+        $answer = implode(" ", $answerCollection->toArray());
+        return Question::create(compact('question','answer'));
+    }
+
+    public static function cacheValidQuestion(Question $question)
+    {
+        //@link:https://stackoverflow.com/questions/41165843/laravel-and-xampp-cache
+        Cache::forever('question',$question);
+    }
+
+    public static function hasValidQuestion()
+    {
+        if (Cache::has('question')) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function getValidQuestion()
+    {
+        if( static::hasValidQuestion()) {
+            return Cache::get('question');
+        }
+
+        // If there is no cached question.
+        $question = Question::latest()->first();
+        static::cacheValidQuestion($question);
+        return $question;
+    }
+
+    public static function getValidQuestionId()
+    {
+        $validQuestion = static::getValidQuestion();
+        return $validQuestion->id;
+    }
+
+    public static function isSubmittedQuestionValid(int $submittedQuestionId)
+    {
+        $validQuestionId = static::getValidQuestionId();
+        return $submittedQuestionId === $validQuestionId;
+    }
+
+    public static function isAnswerCorrect(string $answer)
+    {
+        $answerCollection = static::getQuestionsAnswer($answer);
+        $validAnswer = static::getValidQuestion()->answer;
+        $validAnswerCollection = collect( explode(' ',$validAnswer));
+        $diff = $validAnswerCollection->diff($answerCollection);
+        return $diff->isEmpty();
+    }
+
+    public static function getRandomQuestionSentence()
+    {
+        $client = new Client(['base_uri' => 'http://jservice.io/api/random']);
+        $response = $client->get('');
+        $questionData = $response->getBody();
+        $decodedQuestionData = json_decode($questionData);
+        return $decodedQuestionData[0]->question;
+    }
+
+    /**
+     * processes question string according to task definition steps.
+     * @param string $question
+     * @return \Illuminate\Support\Collection
+     */
     public static function getQuestionsAnswer(string $question)
     {
-//        $question = "II   faked shots smoking 45r& for an apples or nor but so";
+        // collection from string
         $terms = collect(explode(" ",$question));
+
+        // filter all non alphabetical symbols and convert to lower case.
         $lowAlphaTerms = $terms->map(function($term) {
             $lowTerm = strtolower(trim($term));
             $alphaTerm = preg_replace("/[^a-z]+/", "", $lowTerm);
             return $alphaTerm;
         });
 
-        $illegalWords = ['',"for", "the", "a", "an", "and","or","nor","but","so","is","are","of"];
+        // filter illegal words
+        $illegalWords = static::$illegalWords;
         $legalTerms = $lowAlphaTerms->filter(function($term) use($illegalWords) {
             return strlen($term)>0 && !in_array($term, $illegalWords);
         });
 
-        $illegalSuffixes = ["es","s","ed","ing"];
+        // remove illegal suffixes
+        $illegalSuffixes = static::$illegalSuffixes;
         $legalSuffixesTerms = $legalTerms->map(function($term) use($illegalSuffixes) {
             $originalLength = strlen($term);
             foreach ($illegalSuffixes as $suffix) {
@@ -42,54 +122,7 @@ class QuestionHelper
             return $term;
         });
 
-        $resultTerms = implode(" ", $legalSuffixesTerms->toArray());
-        return $resultTerms;
-    }
-
-    //TODO! move Question functionality to QuestionHelper
-    public static function isSubmittedQuestionValid(Request $request, Question $curQuestion)
-    {
-        return static::VALID_QUESTION;
-//        $curQuestionId = $curQuestion->id;
-//        $questionId = (int)$request->input('questionId');
-//        return ($curQuestionId !== $questionId) : static::OUTDATED_QUESTION ? static::VALID_QUESTION;
-    }
-
-    public static function isAnswerCorrect(Request $request,Question $curQuestion)
-    {
-//        return true; // TEMP
-        return false; // TEMP
-        /**
-        $submittedAnswer = $request->input('answer');
-        //TODO! simple validations via QuestionHelper
-        $correctAnswer = $curQuestion->answer;
-
-        $submittedAnswerArray = array_filter( explode(" ",$submittedAnswer));
-        $correctAnswerArray = explode(" ",$correctAnswer);
-
-        if( sizeof($submittedAnswerArray) !== sizeof($correctAnswerArray)) {
-        return false;
-        }
-
-
-        $submittedAnswerCollection = collect($submittedAnswerArray);
-        $correctAnswerCollection = collect($correctAnswerArray);
-         */
-    }
-
-    public static function getRandomQuestionSentence()
-    {
-        $client = new Client(['base_uri' => 'http://jservice.io/api/random']);
-        $response = $client->get('');
-        $questionData = $response->getBody();
-        $decodedQuestionData = json_decode($questionData);
-        $question = $decodedQuestionData[0]->question;
-        return $question;
-    }
-
-    public static function getValidQuestion()
-    {
-
+        return $legalSuffixesTerms;
     }
 
 }

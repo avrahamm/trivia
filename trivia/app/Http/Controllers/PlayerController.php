@@ -10,20 +10,26 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlayerController extends Controller
 {
-    public function login()
+    /**
+     * To display trivia login form.
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function loginForm()
     {
-//        return redirect()->route('login');
         return view('trivia.login');
     }
 
     /**
+     * Creates new user with submitted user name,
+     * the is logged in,
+     * new question is generated if needed,
+     * and redirects.
+     *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function saveUser(Request $request)
     {
-//        dd('saveUser');
-
         $request->validate([
             'username' => 'required|alpha_num|min:2|max:10|',
         ]);
@@ -31,12 +37,12 @@ class PlayerController extends Controller
         $user = factory(User::class)->create([
             'name' => $username,
         ]);
+
         Auth::login($user);
-//        if( $question = QuestionHelper::getValidQuestion())
-        // if valid question exists,
-        //      get it,
-        //      return redirect()->route('game.form');
-        //else
+
+        if( QuestionHelper::hasValidQuestion()) {
+            return redirect()->route('game.form');
+        }
         //  first redirect to create new question,
         return redirect()->route('question.create');
     }
@@ -50,71 +56,5 @@ class PlayerController extends Controller
     {
         // @link:https://stackoverflow.com/questions/15632144/laravel-get-currently-logged-in-users
         $loggedInPlayers = [];
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
-    {
-        //
     }
 }
