@@ -8,13 +8,15 @@
 - Users are created with login user name, and are deleted when loggged out.
 
 ## Steps to set up:
-- git clone https://github.com/avrahamm/trivia.git
-- create DB, for example call it trivia.
-
-- I ran it on XAMP on windows, 
-- you should either prepare virtual host for convenience,lets call it trivia,
+- I ran it on XAMP on windows, so go into htdocs, for example htdocs\JobExams\golgi
+- git clone https://github.com/avrahamm/trivia.git , cd trivia
+- composer install
+- npm install
+- npm run dev
+- you should either prepare virtual host for convenience,lets call it trivia, http://trivia/trivia/login
 - or run from as http://localhost/JobExams/golgi/trivia/public/
 
+- create DB, for example call it trivia.
 # set .env file with DB credentials, for example
 
 - DB_CONNECTION=mysql
