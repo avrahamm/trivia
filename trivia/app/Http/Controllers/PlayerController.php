@@ -56,7 +56,7 @@ class PlayerController extends Controller
     public function showLoggedInUsers()
     {
         // @link:https://stackoverflow.com/questions/15632144/laravel-get-currently-logged-in-users
-        $lifetime = env('SESSION_LIFETIME', 120);
+        $lifetime = config('session.lifetime', 120);
         $loggedInUsers = User::where('updated_at', '>',
             Carbon::now()->subMinutes($lifetime))->get();
         return view('trivia.loggedInUsers', ['users' => $loggedInUsers]);
